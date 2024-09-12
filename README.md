@@ -20,9 +20,7 @@ In the attached dataset, you will see the following fields:
 The task is to create a model that predicts whether a customer will get into an accident and submit a claim.
 
 
-## Report
-
-### Model Performance Summary and Analysis
+## Report (Model Performance Summary)
 
 1. Data Processing Steps
    - Handling Class Imbalance: The target variable (Response) exhibited significant class imbalance, with a majority of "0" (no claims)   compared to "1" (claims). Different strategies were employed to handle this imbalance:
