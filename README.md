@@ -1,1 +1,1 @@
-# insurance-claims-prediction
+# Insurance Claims Prediction
