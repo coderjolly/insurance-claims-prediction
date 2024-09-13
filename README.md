@@ -33,10 +33,19 @@ The dataset contains 382,154 records with 11 features related to customer demogr
 - Numerical features were scaled using `MinMaxScaler` for `Age` and `StandardScaler` for `Annual_Premium`.
 
 ### Key Findings from Exploratory Data Analysis (EDA)
-- The dataset contains more male (1) customers than female (0).
-- Younger customers (20s and 30s) and those with older vehicles (>2 years) are more likely to submit a claim.
-- Customers with previous vehicle damage are more likely to submit a claim.
-- `Previously_Insured` has a strong negative correlation with `Response`, indicating that previously insured customers are less likely to file a claim.
+- The dataset contains more male (1) customers than female (0). Younger customers (20s and 30s) and those with older vehicles (>2 years) are more likely to submit a claim.
+- Customers with previous vehicle damage are more likely to submit a claim. `Previously_Insured` has a strong negative correlation with `Response`, indicating that previously insured customers are less likely to file a claim.
+- Region Code and Claims: There are multiple Region_Code categories, and certain regions show a higher frequency of claims. This suggests that regional factors (e.g., traffic density, road conditions) might influence the likelihood of claims.
+![region-code](ss/region.png)
+- Vehicle Age and Claim Likelihood: Customers with vehicles older than 2 years (Vehicle_Age > 2 years) have a higher likelihood of submitting a claim. This suggests that older vehicles may have a higher risk of accidents or damage.
+![vehicle-age](ss/vehicle-age.png)
+- Impact of Being Previously Insured: Previously_Insured is highly negatively correlated with Response. Customers who were previously insured are significantly less likely to submit a claim. This could indicate that previously insured customers are more cautious or have vehicles in better condition.
+![previously-insured](ss/previous-damage.png)
+- Policy Sales Channel: The Policy_Sales_Channel feature represents different channels through which policies are sold. Certain channels show a higher concentration of customers who have submitted claims, suggesting that the sales channel might be indicative of different customer profiles.
+![policy-sales-channel](ss/policy-channel.png)  
+- **Correlation Analysis:** The correlation matrix shows a strong negative correlation between Previously_Insured and Response and a moderate positive correlation between Previous_Vehicle_Damage and Response. There is no strong multicollinearity among numerical features, suggesting that most features are independently contributing to the prediction.
+![correlation-matrix](ss/correlation-matrix.png)
+
 
 ## 2. Model Development and Evaluation
 Three main modeling strategies were used: Baseline, Oversampling (using SMOTE), and Undersampling (using NearMiss2). Various models were developed and tuned for optimal performance using `RandomizedSearchCV`.
