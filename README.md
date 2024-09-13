@@ -19,53 +19,44 @@ In the attached dataset, you will see the following fields:
 #### Objective
 The task is to create a model that predicts whether a customer will get into an accident and submit a claim.
 
+## Summary Report for Automobile Insurance Claims Prediction
+The goal of the project is to predict whether a customer will submit an insurance claim based on their profile. This was achieved using various machine learning models and addressing class imbalance issues to enhance model performance.
 
-## Report (Model Performance Summary)
+## 1. Data Overview and Preparation
+The dataset contains 382,154 records with 11 features related to customer demographics, insurance details, and the target variable, `Response` (1 = claim, 0 = no claim). Key features include:
+- **Categorical Features**: `Gender`, `Driving_License`, `Region_Code`, `Previously_Insured`, `Vehicle_Age`, `Previous_Vehicle_Damage`, `Policy_Sales_Channel`, and `Response`.
+- **Numerical Features**: `Age` and `Annual_Premium`.
 
-1. Data Processing Steps
-   - Handling Class Imbalance: The target variable (Response) exhibited significant class imbalance, with a majority of "0" (no claims)   compared to "1" (claims). Different strategies were employed to handle this imbalance:
+### Data Cleaning and Encoding
+- Missing values were not present in the dataset.
+- Encoding was performed using binary encoding for features like `Gender`, `Driving_License`, and one-hot encoding for `Vehicle_Age`, `Region_Code`, and `Policy_Sales_Channel`.
+- Numerical features were scaled using `MinMaxScaler` for `Age` and `StandardScaler` for `Annual_Premium`.
 
-        - Baseline Notebook: Models were developed without addressing class imbalance.
-        - Oversampling Notebook: Used Synthetic Minority Over-sampling Technique (SMOTE) to balance the dataset by creating synthetic samples for the minority class.
-        - Undersampling Notebook: Used NearMiss2, an undersampling technique that selects the majority class samples closest to the minority class, balancing the dataset by reducing the majority class.
+### Key Findings from Exploratory Data Analysis (EDA)
+- The dataset contains more male (1) customers than female (0).
+- Younger customers (20s and 30s) and those with older vehicles (>2 years) are more likely to submit a claim.
+- Customers with previous vehicle damage are more likely to submit a claim.
+- `Previously_Insured` has a strong negative correlation with `Response`, indicating that previously insured customers are less likely to file a claim.
 
-    - Data Preparation: Feature scaling and encoding were applied where necessary. Categorical features were one-hot encoded, and numerical features were scaled using StandardScaler or MinMaxScaler. Columns with symbols < and > were renamed for compatibility with machine learning models like XGBoost.
+## 2. Model Development and Evaluation
+Three main modeling strategies were used: Baseline, Oversampling (using SMOTE), and Undersampling (using NearMiss2). Various models were developed and tuned for optimal performance using `RandomizedSearchCV`.
 
-2. Model Development
-   - Model Selection: Three machine learning models were primarily used across all notebooks to evaluate the effectiveness of different sampling techniques:
-          - Random Forest Classifier
-          - XGBoost Classifier
-          - LightGBM Classifier
-   - Hyperparameter Tuning:Each model underwent hyperparameter tuning using RandomizedSearchCV to optimize performance. The `Model_Driver_Function` was employed to "Perform train-test splits", "Tune models using randomized search", "Generate classification reports", "confusion matrices", "ROC", "Precision-Recall curves" and "Save model states for future use".
-   - Evaluation Metrics: Models were evaluated using several metrics:
-        - Accuracy, Precision, Recall, F1-score
-        - ROC AUC Score
-        - Precision-Recall AUC Score
-        - Confusion matrices were generated for both training and testing sets to analyze true positives, false positives, true negatives, and false negatives. 
+### Baseline Models
+- Models such as Random Forest, XGBoost, and LightGBM were used without addressing class imbalance.
+- **Performance**: LightGBM performed best with a **ROC AUC score** of ~0.57 for testing. However, the recall for minority class (claims) was low (17%), highlighting the need for resampling.
 
-3. Model Evaluation/Performance
-    - Baseline Notebook: The baseline models without addressing class imbalance performed poorly, with the Random Forest Classifier achieving the almost "No Skill" ROC AUC score of 0.5.
-        - Random Forest: High precision but poor recall for the minority class ("1"), leading to a low F1-score.
-        - XGBoost: Improved recall for the minority class but still limited in generalization.
-        - LightGBM: Provided the best balance between precision and recall for the minority class but still showed limitations due to the class imbalance. 
-    - Oversampling Notebook (SMOTE): The models trained on the oversampled dataset showed significant improvements in performance metrics compared to the baseline models.
-        - Random Forest: Balanced precision and recall after oversampling, with a notable improvement in minority class prediction.
-        - XGBoost: Performed well with balanced precision and recall, achieving an AUC score over 0.84 on both training and testing sets.
-        - LightGBM: Showed the best performance with the highest AUC and F1 scores among all models, demonstrating its effectiveness in handling balanced datasets.
-    - Undersampling Notebook (NearMiss2): The models trained on the undersampled dataset showed mixed results compared to the oversampling models, had to use version 1 because of low computational power.
-        - Random Forest: Showed reasonable recall for the minority class but suffered in precision due to the reduction in majority class samples.
-        - XGBoost: Similar results to Random Forest with some improvement in F1 scores.
-        - LightGBM: Performed best among the models after undersampling, but still showed limitations compared to oversampling results.
+### Oversampling Models (SMOTE Technique)
+- SMOTE was applied to balance the class distribution by creating synthetic samples for the minority class.
+- **Performance**: LightGBM showed the best results with an **ROC AUC score** of **0.88** and **Precision-Recall AUC score** of **0.91**, demonstrating significant improvement in minority class predictions. This approach showed a balanced recall and precision, making it suitable for practical applications.
 
-4. Rationale for Model Selection
-   - Random Forest: Chosen for its simplicity and robustness, providing a quick baseline for comparison.
-    - XGBoost: Selected for its efficiency and capability to handle large datasets and complex patterns. It allows for better control over regularization and model complexity.
-    - LightGBM: Chosen for its speed and performance, especially with large and imbalanced datasets. It showed superior results in handling balanced datasets created using SMOTE.
-  
-5. Limitations of the Analysis
-   - Computational Costs: The biggest limitation for me was that techniques like SMOTE and hyperparameter tuning using RandomizedSearchCV can be require significant processing time and resouces and I didn't have access to a GPU.
-   - Class Imbalance: The original dataset's significant class imbalance posed a challenge. While oversampling improved recall for the minority class, undersampling reduced the precision due to fewer samples.
-   - Model Overfitting: There is a risk of overfitting in oversampled models due to synthetic data. Conversely, undersampled models might underfit due to the reduced training data.
-   - Some feature engineering could have been done to improve model performance, such as creating new features or combining existing ones to capture more information but unfortunately I didn't have the time to do this. 
+### Undersampling Models (NearMiss2 Technique)
+- NearMiss2 undersampling was applied to balance the dataset by reducing the majority class, which led to reduced precision for non-claim predictions.
+- **Performance**: LightGBM again outperformed other models with an **ROC AUC score** of **0.60** for testing, but the overall performance was lower than the oversampling approach due to the loss of majority class samples.
 
-6. 
+## 3. Recommendations
+- **Computation Power**: Due to the computational costs of hyperparameter tuning and resampling techniques, we should use distributed computing. I had no access to GPU so had to use NearMiss version 1, instead of version 2 or 3. (Biggest Issue)
+- **Feature Importance**: Further analysis of feature importance can provide insights into the key factors influencing claim submissions. I didn't have the time to do this but it could be a good next step.
+- **Preferred Model**: The **LightGBM model with SMOTE oversampling** is recommended due to its balanced handling of both classes and high performance metrics. It provides a good balance between minimizing false negatives (missed claims) and managing false positives. But then again, it can only be because of over-sampling or over-fitting.
+
+## 4. Final Say
+The analysis reveals the importance of addressing class imbalance, The **LightGBM model with SMOTE** achieves the most balanced and reliable results, but still I doubt it as it is achived by synthetic data results. Though, it gives better results for risk management and decision-making in insurance pricing and claims handling strategies.
